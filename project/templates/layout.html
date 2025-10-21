@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Exam Registration System</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/backgrounds.css') }}">
+</head>
+
+<body class="{% block body_class %}bg-soft{% endblock %}">
+
+  <header class="site-header">
+    <div class="brand">
+      <a href="/" aria-label="Go to home">
+        <img src="{{ url_for('static', filename='images/header-logo.png') }}" alt="Exam Registration Portal Logo" class="header-logo"/>
+      </a>
+      <h1 class="site-title">Exam Registration Portal</h1>
+    </div>
+
+    <nav>
+      {% block nav_buttons %}
+      <ul>
+        <li><a class="nav-btn nav-btn-primary" href="/">Home</a></li>
+        <li><a class="nav-btn nav-btn-outline" href="/login">Log in</a></li>
+        <li><a class="nav-btn nav-btn-outline" href="/signup/student">Student Sign Up</a></li>
+        <li><a class="nav-btn nav-btn-outline" href="/signup/faculty">Faculty Sign Up</a></li>
+      </ul>
+      {% endblock %}
+    </nav>
+  </header>
+
+  <main class="page-container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 Exam Registration System</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+/*
+ * backgrounds.css
+ * Reusable background variables and utility classes for the Exam Registration site.
+ * Place this file after `style.css` in your HTML so utilities can override defaults.
+ */
+
+:root{
+  /* Background color tokens that reference the main stylesheet's semantic names. */
+  --bg-surface: var(--surface, #ffffff);
+  --bg-soft: rgba(255,255,255,0.86);
+  --bg-hero-left: rgba(194,164,255,0.90);
+  --bg-hero-right: rgba(171,215,236,0.85);
+  --bg-vignette: rgba(26,14,60,0.20);
+}
+
+/* ------------------------------------------------------------------
+   HERO BACKGROUNDS
+   Use: add `bg-hero` to the page wrapper or `bg-hero--lavender-teal` for
+   the default site hero. Other variants are available below.
+   ------------------------------------------------------------------*/
+
+.bg-hero{
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* Default: soft lavender left + teal right over a light gradient */
+  background-image:
+    radial-gradient(55% 60% at 12% 5%, var(--bg-hero-left) 0%, rgba(194,164,255,0.22) 48%, rgba(194,164,255,0.00) 68%),
+    radial-gradient(60% 70% at 88% 70%, var(--bg-hero-right) 0%, rgba(171,215,236,0.22) 52%, rgba(171,215,236,0.00) 70%),
+    linear-gradient(180deg,#fff 0%, #f7f6fb 36%, #f2f0fa 60%, #efeafb 100%);
+}
+
+.bg-hero--lavender-teal{ /* explicit alias */
+  composes: bg-hero;
+}
+
+/* Alternate hero: purple brand gradient */
+.bg-hero--brand-purple{
+  background-image: linear-gradient(135deg, rgba(122,57,255,0.95) 0%, rgba(156,101,255,0.90) 60%),
+                    linear-gradient(180deg, #fff 0%, #f8f6ff 40%);
+}
+
+/* Subtle soft hero for forms (less contrast) */
+.bg-hero--soft{
+  background-image: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.9) 0%, rgba(248,245,255,0.9) 40%, rgba(240,236,255,0.8) 100%);
+}
+
+/* ------------------------------------------------------------------
+   CARD + SURFACE BACKGROUNDS
+   Use `bg-card` for panels, forms and modals to get consistent glass/solid
+   surfaces with optional elevation classes.
+   ------------------------------------------------------------------*/
+
+.bg-card{
+  background: var(--bg-surface);
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.04);
+  box-shadow: 0 10px 24px rgba(20,16,40,0.06);
+  overflow: hidden;
+}
+
+/* Glass card variant (matches .login-form glass style) */
+.bg-card--glass{
+  background: linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.74));
+  backdrop-filter: blur(6px) saturate(110%);
+  border: 1px solid rgba(255,255,255,0.6);
+}
+
+/* Small utility shadows */
+.elev-1{box-shadow: 0 8px 18px rgba(0,0,0,0.06);}
+.elev-2{box-shadow: 0 16px 36px rgba(0,0,0,0.10);}
+
+/* ------------------------------------------------------------------
+   OVERLAYS & VIGNETTES
+   Helpers to add a color overlay or vignette on top of a background.
+   ------------------------------------------------------------------*/
+
+.bg-overlay{
+  position: relative;
+}
+.bg-overlay::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* dark overlay (useful for hero text contrast) */
+.bg-overlay--dark::after{
+  background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.28));
+  mix-blend-mode: multiply;
+}
+
+/* light haze overlay */
+.bg-overlay--light::after{
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(4px) saturate(110%);
+}
+
+/* vignette for depth */
+.bg-vignette::after{
+  background: radial-gradient(1200px 600px at 50% 80%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.18) 60%);
+  mix-blend-mode: multiply;
+}
+
+/* ------------------------------------------------------------------
+   PATTERNS (subtle) - use sparingly for cards or sections
+   ------------------------------------------------------------------*/
+
+.bg-pattern-dots{
+  background-image: radial-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+.bg-pattern-diagonal{
+  background-image: linear-gradient(135deg, rgba(0,0,0,0.02) 25%, transparent 25%),
+                    linear-gradient(225deg, rgba(0,0,0,0.02) 25%, transparent 25%);
+  background-size: 12px 12px;
+}
+
+/* ------------------------------------------------------------------
+   UTILITY HELPERS (shortcuts)
+   ------------------------------------------------------------------*/
+
+/* Full-bleed container with safe padding for hero sections */
+.bg-bleed{
+  width:100%;
+  padding: 48px 18px;
+}
+
+/* Use on small inline badges to create a soft backdrop */
+.inline-soft{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,250,0.8));
+  border:1px solid rgba(0,0,0,0.04);
+}
+
+/* ------------------------------------------------------------------
+   RESPONSIVE TUNING
+   ------------------------------------------------------------------*/
+@media (max-width:900px){
+  .bg-bleed{padding:36px 12px}
+}
+
+@media (max-width:600px){
+  .bg-bleed{padding:22px 10px}
+}
+
+/* end of backgrounds.css */
