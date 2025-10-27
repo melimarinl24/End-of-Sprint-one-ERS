@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+  <div class="landing-viewport bg-opt-1">
+   {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+     {% for category, message in messages %}
+      <p class="flash {{ category }}">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+   <div class="logo-wrap">
+     <img class="logo-large" src="{{ url_for('static', filename='images/logo-large.png') }}" alt="Large logo" />
+   </div>
+
+  <h2 class="page-heading">Student & Faculty Login</h2>
+
+    <form id="loginForm" class="login-form" method="post" action="{{ url_for('auth.login') }}" aria-label="Login form">
+      <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+      <input type="email" id="email" name="email" placeholder="Email" required>
+      <input type="password" id="password" name="password" placeholder="Password" required>
+      <div class="login-actions">
+      <label for="remember" class="remember-label">
+      <input id="remember" type="checkbox" name="remember" value="1">
+      <span>Remember me</span>
+      </label>
+      <button type="submit" class="btn btn-primary-blue">Login</button>
+      </div>
+      <a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+    </form>
+  </div>
+
+  
+
+{% endblock %}

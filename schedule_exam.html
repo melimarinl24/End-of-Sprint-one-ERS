@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Schedule an Exam</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+</head>
+<body>
+<main class="container">
+<a href="{{ url_for('student_ui.student_dashboard') }}">← Back to dashboard</a>
+<h1>Schedule an Exam</h1>
+
+
+{% if exams %}
+<table>
+<thead>
+<tr><th>Course</th><th>Date</th><th>Time</th><th>Location</th><th></th></tr>
+</thead>
+<tbody>
+{% for e in exams %}
+<tr>
+<td>{{ e.course }}</td>
+<td>{{ e.date }}</td>
+<td>{{ e.time }}</td>
+<td>{{ e.location }}</td>
+<td>
+<!-- For now just pretend to schedule and jump to My Appointments -->
+<a href="{{ url_for('student_ui.student_appointments') }}" role="button">Schedule</a>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p>No available exams right now.</p>
+{% endif %}
+</main>
+</body>
+</html>
+
+{% endblock %}

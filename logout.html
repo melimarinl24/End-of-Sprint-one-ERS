@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Logged Out</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+      let countdown = 5; // seconds before redirect
+      function updateCountdown() {
+        const el = document.getElementById("countdown");
+        if (countdown > 0) {
+          el.textContent = countdown;
+          countdown--;
+          setTimeout(updateCountdown, 1000);
+        } else {
+          window.location.href = "{{ url_for('auth.login') }}";
+        }
+      }
+      window.onload = updateCountdown;
+    </script>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        background: #f5f5f5;
+        color: #333;
+        text-align: center;
+        padding-top: 80px;
+      }
+      .card {
+        display: inline-block;
+        background: white;
+        padding: 2rem 3rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      }
+      .flash-messages li {
+        list-style: none;
+        margin: 10px 0;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #0077cc;
+        color: #fff;
+        border-radius: 8px;
+        text-decoration: none;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>You’ve been logged out</h1>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="flash-messages">
+            {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      <p>You will be redirected to the login page in <span id="countdown">5</span> seconds.</p>
+      <a href="{{ url_for('auth.login') }}" class="button">Go to Login Now</a>
+    </div>
+  </body>
+</html>
+
+{% endblock %}

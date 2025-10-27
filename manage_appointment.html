@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Manage Appointment</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+</head>
+<body>
+<main class="container">
+<a href="{{ url_for('student_ui.student_appointments') }}">← Back to My Appointments</a>
+<h1>Appointment #{{ appt_id }}</h1>
+<details open>
+<summary>What would you like to do?</summary>
+<div class="grid">
+<a role="button" class="contrast" href="{{ url_for('student_ui.student_appointments') }}">Cancel Appointment</a>
+<a role="button" href="{{ url_for('student_ui.student_exams') }}">Reschedule</a>
+</div>
+</details>
+</main>
+</body>
+</html>
+
+{% endblock %}

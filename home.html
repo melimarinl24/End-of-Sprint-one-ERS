@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="homepage-hero bg-hero" style="padding:65px 0 110px 0;">
+
+  <div class="home-content">
+    <center>
+    <img src="{{ url_for('static', filename='images/csnlogo.png') }}" alt="College of Southern Nevada Logo" width="400" height="200">
+    <h1 class="home-title">Welcome to the College of Southern Nevada<br> Exam Registration Portal</h1>
+
+    <p class="home-sub">
+      Secure, role-based exam booking for CSN students and faculty.
+    </p>
+
+    <p class="home-body">
+      The ERS provides a simple and convenient way for CSN
+      students to reserve testing appointments online. 
+      <br>Faculty are also supported through dedicated role-based features that simplify
+      oversight and exam coordination.
+      <br> Students can choose their preferred exam
+      location, date, and time directly through the system. Once logged in, the
+      platform automatically recognizes the user and guides them through a quick
+      registration process. Designed to be flexible and accessible,
+      the system allows students to view available sessions in real time, check exam
+      availability, and manage their upcoming appointments. 
+      
+    </p>
+    </center>
+  </div>
+
+</section>
+
+{% endblock %}
