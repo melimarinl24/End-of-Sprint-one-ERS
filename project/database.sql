@@ -226,5 +226,14 @@ SELECT * FROM Buildings;
 SELECT * FROM Departments;
 
 
+ALTER TABLE Users
+MODIFY nshe_id VARCHAR(10) NULL;
+
+ALTER TABLE Users
+ADD COLUMN employee_id VARCHAR(15) NULL AFTER nshe_id;
 
 
+-- NOTE: adjust table/column names if yours differ
+ALTER TABLE `Users`
+  ADD UNIQUE KEY `uq_users_email` (`email`),
+  ADD UNIQUE KEY `uq_users_nshe` (`nshe_id`);

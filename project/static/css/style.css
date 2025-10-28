@@ -1,10 +1,9 @@
 :root{
   --muted:#333333;
-  --accent:#0077B6;             /* blue for general CTA */
+  --accent:#0077B6;
   --surface:#ffffff;
   --shadow:0 10px 24px rgba(0,0,0,0.08);
 
-  /* Home (purple) */
   --brand-purple:#7A39FF;
   --brand-purple-900:#33204f;
   --brand-purple-700:#4b2c86;
@@ -12,15 +11,19 @@
   --brand-blue-500:#2e79ff;
 }
 
+/* -------------------------------------------------- */
+/* BASE                                               */
+/* -------------------------------------------------- */
+
 html,body{overflow-x:hidden}
 body{
   font-family: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   margin:0; padding:0; min-height:100vh; position:relative;
 
-  /* Pastel background (all non-home pages) */
+  /* pastel background (all pages) */
   background:
-    radial-gradient(55% 60% at 12% 5%, rgba(194,164,255,0.90) 0%, rgba(194,164,255,0.22) 48%, rgba(194,164,255,0) 68%),
-    radial-gradient(60% 70% at 88% 70%, rgba(171,215,236,0.85) 0%, rgba(171,215,236,0.22) 52%, rgba(171,215,236,0) 70%),
+    radial-gradient(55% 60% at 12% 5%, rgba(194,164,255,0.80) 0%, rgba(194,164,255,0.18) 48%, rgba(194,164,255,0) 68%),
+    radial-gradient(60% 70% at 88% 70%, rgba(171,215,236,0.70) 0%, rgba(171,215,236,0.18) 52%, rgba(171,215,236,0) 70%),
     linear-gradient(180deg,#fff 0%, #f7f6fb 36%, #f2f0fa 60%, #efeafb 100%);
   background-attachment: fixed;
   color:var(--muted);
@@ -32,109 +35,196 @@ body::before{
 }
 .page-container{ position:relative; z-index:1; }
 
-/* Header (shown everywhere except home, where we block it) */
+/* -------------------------------------------------- */
+/* HEADER                                              */
+/* -------------------------------------------------- */
+
 .site-header{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:12px 22px;
+  padding:14px 28px;
   background:linear-gradient(180deg, #fcfdfe, #fbfcfd);
   border-bottom:1px solid rgba(0,0,0,0.04);
   position:relative;
-  z-index: 3;           /* <-- ADD THIS */
-  backdrop-filter:none; /* <-- AND THIS (prevents blur on header) */
+  z-index: 3;
+  backdrop-filter:none;
+}
+
+/* BIGGER like the original */
+.site-title{
+  font-weight:800;
+  font-size:1.9rem;
+  margin:0;
+  letter-spacing:.3px;
 }
 
 .brand{display:flex; align-items:center; gap:14px}
 .header-logo{height:40px}
-.site-title{font-weight:700; letter-spacing:.2px; margin:0}
 
-/* Nav buttons (simple) */
+/* Nav buttons */
 nav ul{list-style:none; margin:0; padding:0; display:flex; gap:14px}
-.nav-btn{padding:8px 14px; border-radius:999px; text-decoration:none; display:inline-block; font-weight:600}
+.nav-btn{
+  padding:10px 18px;
+  border-radius:999px;
+  text-decoration:none;
+  display:inline-block;
+  font-weight:600;
+}
 .nav-btn-outline{border:1px solid rgba(0,0,0,.12); color:#111; background:#fff}
 .nav-btn-outline:hover{background:#f7f7fb}
 
-/* Landing wrapper */
+.btn-outline-dark{
+  background:rgba(255,255,255,.08);
+  color:#000;
+  border:1px solid rgba(0,0,0,.35);
+  padding:10px 18px;
+  border-radius:999px;
+  font-weight:600;
+}
+.btn-outline-dark:hover{
+  background:rgba(255,255,255,.16);
+  color:#000;
+}
+
+/* -------------------------------------------------- */
+/* LOGIN CARD / LOGO                                   */
+/* -------------------------------------------------- */
+
 .landing-viewport{
-  max-width:980px; margin:0 auto; padding:36px 16px 120px;
-  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  max-width:980px;
+  margin:0 auto;
+  padding:36px 16px 120px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
 }
 
-/* Logo blend (login only) */
-.logo-wrap{ position:relative; width:min(420px, 90vw); margin: 10px auto 8px; }
+/* Reduce login-logo so it matches proportion on screenshot */
+.logo-wrap{
+  position:relative;
+  width:min(360px, 80vw);
+  margin: 10px auto 8px;
+}
 .logo-wrap::before{
-  content:""; position:absolute; inset:-12% -14% -14%;
+  content:""; position:absolute; inset:-16% -18% -18%;
   background:
-    radial-gradient(80% 80% at 15% 10%, rgba(192,158,255,.85) 0%, rgba(192,158,255,0) 65%),
-    radial-gradient(90% 90% at 95% 80%, rgba(152,209,231,.75) 0%, rgba(152,209,231,0) 60%);
-  filter: blur(14px); z-index:0;
+    radial-gradient(80% 80% at 15% 10%, rgba(192,158,255,.70) 0%, rgba(192,158,255,0) 65%),
+    radial-gradient(90% 90% at 95% 80%, rgba(152,209,231,.55) 0%, rgba(152,209,231,0) 60%);
+  filter: blur(22px);
+  z-index:0;
 }
-.logo-large{ position:relative; z-index:1; display:block; width:100%; height:auto; mix-blend-mode:multiply; }
+.logo-large{
+  position:relative;
+  z-index:1;
+  display:block;
+  width:100%;
+  height:auto;
+  mix-blend-mode:multiply;
+}
+/* -------------------------------------------------- */
+/* LOGIN FORM / REMEMBER ME FIX                        */
+/* -------------------------------------------------- */
 
-/* Form card */
 .login-form{
-  width:100%; max-width:640px;
+  width:100%; 
+  max-width:420px;   /* ✅ back to correct width */
   background:linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.74));
   backdrop-filter:blur(6px) saturate(110%);
   border:1px solid rgba(255,255,255,0.6);
   box-shadow:0 18px 45px rgba(20,16,40,.18);
   border-radius:14px;
   padding:28px;
-}
-.login-form input, .login-form select{
-  display:block; width:100%; box-sizing:border-box;
-  padding:16px 18px; margin:14px 0;
-  border:1px solid #e6e6e6; border-radius:10px; font-size:16px;
-}
-.login-form input:focus, .login-form select:focus{
-  outline:3px solid rgba(0,119,182,0.12); border-color:var(--accent);
+  margin-top:14px;
 }
 
-/* Button styles (purple on home, blue elsewhere primary) */
-.btn{display:inline-block; text-decoration:none; border-radius:12px; padding:12px 18px; font-weight:700; border:0; cursor:pointer}
-.btn-primary-purple{background:var(--brand-purple-500); color:#fff; box-shadow:0 10px 24px rgba(109,49,255,.26)}
-.btn-primary-purple:hover{transform:translateY(-2px)}
-.btn-outline-dark{background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.35); padding:12px 18px; border-radius:12px}
-.btn-outline-dark:hover{background:rgba(255,255,255,.16)}
-.btn-primary-blue{background:var(--accent); color:#fff; box-shadow:0 10px 22px rgba(0,119,182,.18)}
-.btn-primary-blue:hover{transform:translateY(-2px)}
+.login-form input:not([type="checkbox"]),
+.login-form select{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  padding:14px 16px;
+  margin:12px 0;
+  border:1px solid #e6e6e6;
+  border-radius:10px;
+  font-size:15px;
+}
+.login-form input:focus,
+.login-form select:focus{
+  outline:3px solid rgba(0,119,182,0.12);
+  border-color:var(--accent);
+}
 
-/* Remember / forgot positioning (login) */
-.remember-line{display:flex; align-items:center; gap:8px; margin:14px 0 4px}
-.forgot-line{margin:6px 0 0; text-align:left}
+/* Checkbox formatting */
+.login-form input[type="checkbox"]{
+  width:auto;
+  height:auto;
+  margin:0 6px 0 0;
+}
 
-/* Headings & text */
-.page-heading{font-weight:600; font-size:22px; margin:10px 0 16px}
-.hero-paragraph{max-width:760px; text-align:center}
+/* Remember me label */
+.remember-label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+  font-size:0.95rem;
+  color:#333;
+}
 
-/* Floating footer */
-/* .footer{ text-align:center; color:rgba(0,0,0,.55); padding:14px; margin: 24px 0; } */
+/* Forgot link centered below */
+.forgot-line{
+  text-align:center;
+  margin:10px 0 0;
+  width:100%;
+}
 
-.footer {
+/* Buttons */
+.btn{
+  display:inline-block;
+  text-decoration:none;
+  border-radius:12px;
+  padding:12px 20px;
+  font-weight:700;
+  border:0;
+  cursor:pointer;
+}
+
+.btn-primary-blue{
+  background:var(--accent);
+  color:#fff;
+  box-shadow:0 10px 22px rgba(0,119,182,.18);
+}
+.btn-primary-blue:hover{
+  transform:translateY(-2px);
+}
+
+/* -------------------------------------------------- */
+/* FOOTER                                              */
+/* -------------------------------------------------- */
+
+.footer{
   text-align:center;
   color: rgba(0,0,0,.55);
   padding:16px;
   margin:24px 0;
   position: relative;
   z-index: 3;
-  backdrop-filter: none !important;
 }
 
+/* -------------------------------------------------- */
+/* HOME HERO (GRADIENT VISIBILITY FIX)                 */
+/* -------------------------------------------------- */
 
-
-/* ---------------- HOME (Header hidden; Hero = Box, top-aligned) ---------------- */
-body.home{
-  /* Use a neutral bg behind the hero box */
-  background: radial-gradient(circle at 20% 20%, #201433 0%, #1A1330 100%);
-  color:#e7e6f5;
-}
-body.home .footer p{color:rgba(255,255,255,.7)}
 .hero-wrap{
   padding:42px 18px 72px;
-  display:flex; justify-content:flex-start; align-items:center; /* Position B */
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
   min-height:calc(100vh - 120px);
 }
+
 .hero-box{
   width:min(1100px, 92vw);
   border-radius:22px;
@@ -142,32 +232,110 @@ body.home .footer p{color:rgba(255,255,255,.7)}
   margin:0 auto;
   color:#fff;
 
-  /* Purple/blue angled gradient inside a box */
+  /* make gradient SOFTER under text */
   background:
-    radial-gradient(60% 70% at 80% 20%, rgba(26, 166, 255, 0.20) 0%, rgba(26,166,255,0) 60%),
+    radial-gradient(60% 70% at 80% 20%, rgba(26,166,255,0.12) 0%, rgba(26,166,255,0) 60%),
     linear-gradient(135deg, #2B1C45 0%, #4B2C86 45%, #1E2C4F 100%);
   box-shadow:
     0 30px 60px rgba(0,0,0,.35),
     inset 0 0 120px rgba(255,255,255,.06);
 }
+
 .hero-title{
   font-weight:800;
-  font-size: clamp(32px, 5vw, 56px);
-  line-height:1.05;
+  font-size: clamp(30px, 4.8vw, 48px);
+  line-height:1.12;
   margin:0 0 22px;
-  text-shadow: 0 12px 40px rgba(0,0,0,.5);
+  text-shadow:0 12px 40px rgba(0,0,0,.5);
 }
-.hero-kicker{
-  font-size:18px; font-weight:700; margin:0 0 18px; color:#eae8ff;
-}
-.hero-body{
-  max-width:780px; line-height:1.65; margin:0 0 26px; color:#f1efff;
-}
-.hero-actions{display:flex; gap:14px; flex-wrap:wrap}
 
-/* Small screens */
+.hero-kicker{
+  font-size:17px;
+  font-weight:600;
+  margin:0 0 18px;
+  color:#eae8ff;
+}
+
+.hero-body{
+  max-width:780px;
+  line-height:1.65;
+  margin:0 0 26px;
+  color:#f1efff;
+}
+
+.hero-actions{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
 @media (max-width:720px){
+  .login-form{max-width:92vw;}
   .hero-box{padding:32px 22px}
-  .hero-actions{gap:10px}
-  .btn{padding:10px 14px; border-radius:10px}
+}
+
+
+/* --- PATCH: Home paragraph width (friend style) --- */
+.hero-body,
+.home-body,
+.home-sub {
+    max-width: 780px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* --- FINAL PATCH: Center login button correctly --- */
+.login-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;   /* checkbox stays left */
+    justify-content: flex-start !important;
+    width: 100%;
+}
+.login-actions .btn-primary-blue {
+    align-self: center !important;  /* login button centered */
+    margin-top: 12px;
+}
+
+/* Base style for Sign Up pill (missing before) */
+/* Final visual balance tweak */
+/* FINAL REAL SIGN UP BUTTON FIX */
+.btn-primary-purple {
+    background: var(--brand-purple-500) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 18px rgba(109,49,255,0.25) !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 25px !important;        /* matches Home / Log In */
+    padding: 30px 32px !important;   /* reduced from 10px */
+    font-size: 15px !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    margin-top: 2px !important;     /* visual nudge down */
+}
+
+/* --- FINAL PERFECT FIX: match height to Home/Log in --- */
+.site-header nav a.btn-primary-purple {
+    background: var(--brand-purple-500) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+
+    /* sizing */
+    height: 41.8px !important;
+    padding: 0 20px !important;   /* tighter left/right */
+    line-height: 41.8px !important; /* vertically centers text in same way as others */
+
+    /* shape & layout */
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+
+    /* glow */
+    box-shadow: 0 6px 18px rgba(109,49,255,0.22) !important;
 }

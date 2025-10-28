@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect, url_for, render_template
+from flask import Flask, app, request, jsonify, redirect, url_for, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user
 import logging      
@@ -13,34 +13,52 @@ def create_app():
 
     load_dotenv()
 
-    # Ensure basic logging is configured if the host didn't set it
-    if not logging.getLogger().handlers:
-        logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s: %(message)s')
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "dev-only-change-me")
 
-    # During local development, allow templates to auto-reload when changed.
-    # This is safe because the app is bound to 127.0.0.1 by default in run.py.
-    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.config['MYSQL_HOST'] = os.getenv("MYSQL_HOST")
+    app.config['MYSQL_USER'] = os.getenv("MYSQL_USER")
+    app.config['MYSQL_PASSWORD'] = os.getenv("MYSQL_PASSWORD")
+    app.config['MYSQL_DB'] = os.getenv("MYSQL_DB")
 
-    # Load DB credentials from environment (set these in a local .env file or via OS env vars)
-    mysql_host = os.getenv("MYSQL_HOST")
-    mysql_user = os.getenv("MYSQL_USER")
-    mysql_password = os.getenv("MYSQL_PASSWORD")
-    mysql_db = os.getenv("MYSQL_DB")
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        f"mysql+pymysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}"
+        f"@{app.config['MYSQL_HOST']}/{app.config['MYSQL_DB']}"
+    )
+    
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    if not all([mysql_host, mysql_user, mysql_password, mysql_db]):
-        logging.getLogger(__name__).warning(
-            "One or more MYSQL_* environment variables are not set. "
-            "SQLALCHEMY_DATABASE_URI will not be configured until they are provided."
-        )
-    else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = (
-            f"mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}/{mysql_db}"
-        )
-
+    # Init extensions
     db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message_category = 'info'
+    login_manager.session_protection = "strong"
+    from .models import User
 
-    # Register routes from views.py
-    from .views import bp as main_bp
-    app.register_blueprint(main_bp)
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+    
+
+    # Import models so create_all sees them (add your models here)
+    with app.app_context():
+        # from .exams import Exam  # if you have this model
+        # from .models import User # when you add it
+        db.create_all()
+
+    # Register blueprints here
+
+    from .views import bp as main
+    app.register_blueprint(main)
+
+    from .auth import auth
+    app.register_blueprint(auth)
+
+    from .student_ui import student_ui
+    app.register_blueprint(student_ui)
+
+    from .faculty_ui import faculty_ui
+    app.register_blueprint(faculty_ui)
 
     return app

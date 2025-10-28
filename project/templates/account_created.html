@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+<main class="container" style="max-width:820px;margin:40px auto;padding:18px;">
+  <h2>Account Created</h2>
+  <p>Your account has been successfully created.</p>
+
+  <div style="background:#f5f5f5;padding:16px;margin:18px 0;border-radius:8px;">
+    <p><strong>Login Email:</strong> {{ email }}</p>
+    <p><strong>Password:</strong>
+      Students: your NSHE number &nbsp;•&nbsp; Faculty: your Employee ID
+    </p>
+  </div>
+
+  <a href="{{ dashboard_url }}" class="btn btn-primary-blue">Go to Dashboard</a>
+</main>
+{% endblock %}

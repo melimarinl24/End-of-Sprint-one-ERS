@@ -1,4 +1,7 @@
+print(">>> LOADED: views.py blueprint <<<")
+
 from flask import Blueprint, render_template, jsonify, current_app, redirect, url_for, request, flash
+from flask_login import login_required, current_user
 from . import db
 from sqlalchemy import text
 import os
@@ -8,118 +11,21 @@ import logging
 bp = Blueprint('main', __name__)
 
 
-@bp.route('/', methods=['GET'], endpoint='home')
+# views.py
+@bp.route('/', methods=['GET', 'POST'], endpoint='home')
 def home():
-    # Serve the hero homepage at the site root so the header Home link
-    # points to the intended landing page rather than the login view.
-    try:
-        return render_template('home.html')
-    except Exception:
-        # Fall back to the login template if the home template is missing
-        return render_template('index.html')
+    if request.method == 'POST':
+        # If a form accidentally posts to '/', bounce it to login (or wherever makes sense)
+        return redirect(url_for('auth.login'))
+    return render_template('home.html')
 
 
-@bp.route('/Sign up', methods=['GET'])
-def Signup():
-    return jsonify({'message': 'Sign up'})
-
-
-@bp.route('/signup/student', methods=['GET', 'POST'], endpoint='signup_student')
-def signup_student():
-    """Simple student signup/info page that directs users to the login flow."""
-    try:
-        if request.method == 'POST':
-            first = request.form.get('first_name', '').strip()
-            last = request.form.get('last_name', '').strip()
-            email = request.form.get('email', '').strip()
-            phone = request.form.get('phone', '').strip()
-            nshe = request.form.get('nshe', '').strip()
-            major = request.form.get('major', '').strip()
-
-            # Basic validation
-            if not email:
-                return render_template('signup_student.html', errorMsg="Please provide an email address")
-
-            if not email.endswith("@student.csn.edu"):
-                return render_template('signup_student.html', errorMsg="Email must end with @student.csn.edu")
-
-            local_part = email.split('@')[0]
-            if not ("." in local_part or local_part.isdigit()):
-                return render_template('signup_student.html', errorMsg="Email must be first.last@student.csn.edu or nshe@student.csn.edu")
-
-            if not nshe or not nshe.isdigit() or len(nshe) != 10:
-                return render_template('signup_student.html', errorMsg="NSHE must be a 10-digit number")
-
-            # Success (no DB persistence here) -> prompt to login
-            flash("Signup successful! Please log in.", "success")
-            # Redirect to the auth blueprint's login endpoint
-            return redirect(url_for('auth.login'))
-
-        # GET -> show the signup form
-        return render_template('signup_student.html')
-    except Exception:
-        return jsonify({'error': 'template not available'}), 500
-
-
-# Legacy compatibility: accept the alternate path '/student/signup' and delegate
-# to the canonical signup_student view so old links or hard-coded forms still work.
-@bp.route('/student/signup', methods=['GET', 'POST'])
-def student_signup_alias():
-    return signup_student()
-
-
-@bp.route('/signup/faculty', methods=['GET'], endpoint='signup_faculty')
-def signup_faculty():
-    """Simple faculty signup/info page that directs users to the login flow."""
-    try:
-        return render_template('signup_faculty.html')
-    except Exception:
-        return jsonify({'error': 'template not available'}), 500
-
-
-# Note: the canonical login route is provided by the `auth` blueprint.
-@bp.route('/login', methods=['GET'], endpoint='login')
-def login_page():
-    """Render the HTML login page via the main blueprint as an alias.
-    Primary login handling (POST) is implemented in `auth.login`.
-    """
-    try:
-        return render_template('login.html')
-    except Exception:
-        return jsonify({'error': 'template not available'}), 500
-
-
-# @bp.route('/student-signup', methods=['GET', 'POST'])
-# def signup_student():
-#     if request.method == 'POST':
-#         first = request.form.get('first_name')
-#         last = request.form.get('last_name')
-#         email = request.form.get('email')
-#         phone = request.form.get('phone')
-#         nshe = request.form.get('nshe')
-#         major = request.form.get('major')
-
-#         # Validate email
-#         if not email.endswith("@student.csn.edu"):
-#             return render_template('signup_student.html', errorMsg="Email must end with @student.csn.edu")
-
-#         local_part = email.split('@')[0]
-#         if not ("." in local_part or local_part.isdigit()):
-#             return render_template('signup_student.html', errorMsg="Email must be first.last@student.csn.edu or nshe@student.csn.edu")
-
-#         # Validate NSHE number
-#         if not nshe.isdigit() or len(nshe) != 10:
-#             return render_template('signup_student.html', errorMsg="NSHE must be a 10-digit number")
-
-#         # If everything is good
-#         return render_template('signup_student.html', successMsg="Student signup successful!")
-
-#     # GET request → show blank form
-#     return render_template('signup_student.html')
-
-
-# /homepage removed; root `/` (`Home`) is the canonical landing page (home.html)
-
+@bp.route('/dashboard')
+# @login_required  # remove this for now if you haven't wired login_user yet
+def dashboard():
+    # If you have roles on the user, you can pass them to the template:
+    role_name = getattr(getattr(current_user, 'role', None), 'name', None)
+    return render_template('dashboard.html', role=role_name)
 
 @bp.route('/test-db')
 def test_db():

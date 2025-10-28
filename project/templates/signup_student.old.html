@@ -1,0 +1,71 @@
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Exam Registration System</title>
+
+ Fonts & CSS
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="">
+  
+  <header class="site-header">
+    <div class="brand">
+      <a href="/" aria-label="Go to home">
+        <img src="/static/images/header-logo.png" alt="Logo" class="header-logo">
+      </a>
+      <h1 class="site-title">Exam Registration Portal</h1>
+    </div>
+
+    <nav>
+      <ul>
+        <li><a class="nav-btn nav-btn-outline" href="/">Home</a></li>
+        <li><a class="nav-btn nav-btn-outline" href="/login">Log in</a></li>
+        <li><a class="nav-btn nav-btn-outline" href="/signup">Sign Up</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+
+  <main class="page-container">
+    
+<div class="landing-viewport">
+  <h2 class="page-heading">Student & Faculty Sign Up</h2>
+
+  <form class="login-form" action="/signup/student" method="post">
+    <input type="text" name="first_name" placeholder="First Name" required>
+    <input type="text" name="last_name" placeholder="Last Name" required>
+    <input type="email" name="email" placeholder="Student Email (NSHE#@student.csn.edu)" required>
+    <input type="tel" name="phone" placeholder="Phone Number" required>
+    <input type="text" name="nshe" placeholder="NSHE ID Number" required>
+
+    <select name="major" required>
+      <option value="" disabled selected>Select Major</option>
+      <option value="Computer Science">Computer Science</option>
+      <option value="Information Technology">Information Technology</option>
+      <option value="Engineering">Engineering</option>
+      <option value="Business">Business</option>
+      <option value="Nursing">Nursing</option>
+      <option value="Undeclared">Undeclared</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary-blue">Create Student Account</button>
+
+    
+    
+  </form>
+</div>
+
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 Exam Registration System</p>
+  </footer>
+</body>
+</html> -->

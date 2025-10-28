@@ -1,0 +1,219 @@
+{% extends "layout.html" %}
+{% block site_header %}{{ super() }}{% endblock %}
+
+{% block content %}
+<div class="landing-viewport">
+
+  {% if errorMsg %}
+    <p class="error" style="text-align:center; margin-bottom:10px;">{{ errorMsg }}</p>
+  {% endif %}
+
+  <h2 class="page-heading">Sign Up</h2>
+  <p class="hero-paragraph">
+    Students register using their CSN email and NSHE number. Faculty register with their CSN email and employee ID.
+  </p>
+
+  <form id="signupForm" class="login-form" method="POST" action="{{ url_for('auth.signup') }}" autocomplete="off">
+    {{ csrf_token() if csrf_token is defined }}
+
+    <!-- Honeypot (blocks browser autofill confusion) -->
+    <input type="text" name="fake-username" autocomplete="username"
+          tabindex="-1" aria-hidden="true"
+          style="position:absolute;left:-9999px;top:-9999px;height:0;width:0;opacity:0;">
+
+    <!-- Role -->
+    <label for="role">Role</label>
+    <select id="role" name="role" required>
+      <option value="" disabled selected>Select your role</option>
+      <option value="student" {{ 'selected' if request.form.get('role')=='student' }}>Student</option>
+      <option value="faculty" {{ 'selected' if request.form.get('role')=='faculty' }}>Faculty</option>
+    </select>
+
+    <!-- Common fields -->
+    <input type="text" name="first_name" placeholder="First Name"
+           value="{{ request.form.get('first_name','') }}" required>
+    <input type="text" name="last_name"  placeholder="Last Name"
+           value="{{ request.form.get('last_name','')  }}" required>
+    <input type="tel"   name="phone"      placeholder="Phone Number"
+           value="{{ request.form.get('phone','') }}" required>
+
+    <!-- STUDENT SECTION -->
+    <fieldset id="studentFields" class="role-fields hidden" disabled>
+      <input type="email" name="email" id="studentEmail"
+             placeholder="Student Email (NSHE#@student.csn.edu)"
+             value="{{ request.form.get('email','') }}"
+             pattern="^\d{10}@student\.csn\.edu$"
+             inputmode="email" autocomplete="username"
+             autocapitalize="none" spellcheck="false" required>
+      <small id="studentEmailHint" class="hint">Example: 1234567890@student.csn.edu</small>
+      <small id="studentEmailError" class="error" aria-live="polite"></small>
+
+      <input type="text" name="nshe" id="nshe"
+             pattern="^\d{10}$" inputmode="numeric"
+             placeholder="NSHE (10 digits)"
+             value="{{ request.form.get('nshe','') }}" required>
+
+      <select name="major" id="major" required>
+        <option value="" disabled selected>Select Major</option>
+        {% for m in ['Computer Science','Information Technology','Engineering','Business','Nursing','Undeclared'] %}
+          <option value="{{ m }}" {{ 'selected' if request.form.get('major')==m }}>{{ m }}</option>
+        {% endfor %}
+      </select>
+    </fieldset>
+
+    <!-- FACULTY SECTION -->
+    <fieldset id="facultyFields" class="role-fields hidden" disabled>
+      <input type="email" name="email" id="facultyEmail"
+             placeholder="Faculty Email (firstname.lastname@csn.edu)"
+             value="{{ request.form.get('email','') }}"
+             pattern="^[A-Za-z]+(?:\.[A-Za-z]+)*@csn\.edu$"
+             inputmode="email" autocomplete="off"
+             autocapitalize="none" spellcheck="false" required>
+      <small id="facultyEmailHint" class="hint">Example: jane.doe@csn.edu</small>
+      <small id="facultyEmailError" class="error" aria-live="polite"></small>
+
+      <input type="text" name="employee_id" id="employee_id"
+             placeholder="Employee ID (6-10 digits)"
+             minlength="6" maxlength="10"
+             inputmode="numeric" autocomplete="off" required>
+
+      <select name="department_id" id="department_id" required>
+        <option value="" disabled selected>Select Department</option>
+        {% for d in departments %}
+          <option value="{{ d.id }}"
+            {{ 'selected' if request.form.get('department_id') == d.id|string else '' }}>
+            {{ d.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </fieldset>
+
+    <button id="signupSubmit" type="submit" class="btn btn-primary-blue" disabled>Create Account</button>
+
+  </form>
+</div>
+
+<style>
+  .hidden { display: none; }
+  .role-fields { margin-top: .75rem; border: 0; padding: 0; }
+  .hint { display:block; margin:.25rem 0 .25rem; color:#666; font-size:.9rem; }
+  .hint.valid { color:#1a7f37; }
+  .hint.invalid { color:#b20710; }
+  .error { display:block; margin:.1rem 0 .5rem; color:#b20710; font-size:.9rem; }
+</style>
+
+<script>
+(function () {
+  const form = document.getElementById('signupForm');
+  const submitBtn = document.getElementById('signupSubmit');
+
+  const roleSel = document.getElementById('role');
+  const studentFS = document.getElementById('studentFields');
+  const facultyFS = document.getElementById('facultyFields');
+
+  // Student refs
+  const nshe = document.getElementById('nshe');
+  const studentEmail = document.getElementById('studentEmail');
+  const studentHint = document.getElementById('studentEmailHint');
+  const studentErr = document.getElementById('studentEmailError');
+
+  // Faculty refs
+  const facultyEmail = document.getElementById('facultyEmail');
+  const facultyHint = document.getElementById('facultyEmailHint');
+  const facultyErr = document.getElementById('facultyEmailError');
+  const employeeId = document.getElementById('employee_id');
+  const department = document.getElementById('department_id');
+
+  const RE = {
+    nshe: /^\d{10}$/,
+    studentEmail: /^\d{10}@student\.csn\.edu$/,
+    facultyEmail: /^[A-Za-z]+(?:\.[A-Za-z]+)*@csn\.edu$/,
+    employeeId: /^\d{6,10}$/,
+  };
+
+  function setSectionState(section, visible) {
+    section.classList.toggle('hidden', !visible);
+    section.disabled = !visible;
+    [...section.querySelectorAll('input,select')].forEach(el => {
+      el.required = visible;
+    });
+    updateSubmitState();
+  }
+
+  function toggle(val) {
+    setSectionState(studentFS, val === 'student');
+    setSectionState(facultyFS, val === 'faculty');
+  }
+
+  // Student logic
+  function syncStudentEmailFromNSHE() {
+    const v = nshe.value || '';
+    if (RE.nshe.test(v)) {
+      const auto = `${v}@student.csn.edu`;
+      if (!studentEmail.value || /^\d{0,10}@student\.csn\.edu$/.test(studentEmail.value))
+        studentEmail.value = auto;
+      studentHint.textContent = 'Looks good: ' + auto;
+      studentHint.classList.add('valid'); studentHint.classList.remove('invalid');
+    }
+  }
+
+  function validateStudent() {
+    studentErr.textContent = '';
+    if (!RE.nshe.test(nshe.value)) {
+      studentErr.textContent = 'NSHE must be exactly 10 digits.';
+      return false;
+    }
+    if (!RE.studentEmail.test(studentEmail.value.trim())) {
+      studentErr.textContent = 'Use NSHEID@student.csn.edu.';
+      return false;
+    }
+    return true;
+  }
+
+  // Faculty logic
+  function validateFaculty() {
+    facultyErr.textContent = '';
+    if (!RE.facultyEmail.test((facultyEmail.value || '').trim())) {
+      facultyErr.textContent = 'Email format: firstname.lastname@csn.edu';
+      return false;
+    }
+    if (!RE.employeeId.test((employeeId.value || '').trim())) {
+      facultyErr.textContent = 'Employee ID must be 6–10 digits.';
+      return false;
+    }
+    if (!department.value) {
+      facultyErr.textContent = 'Department is required.';
+      return false;
+    }
+    return true;
+  }
+
+  function validateActiveRole() {
+    if (roleSel.value === 'student') return validateStudent();
+    if (roleSel.value === 'faculty') return validateFaculty();
+    return false;
+  }
+
+  function updateSubmitState() {
+    submitBtn.disabled = !(roleSel.value && validateActiveRole());
+  }
+
+  roleSel.addEventListener('change', e => { toggle(e.target.value); updateSubmitState(); });
+  nshe?.addEventListener('input', () => { syncStudentEmailFromNSHE(); validateStudent(); updateSubmitState(); });
+  studentEmail?.addEventListener('input', () => { validateStudent(); updateSubmitState(); });
+
+  facultyEmail?.addEventListener('input', () => { validateFaculty(); updateSubmitState(); });
+  employeeId?.addEventListener('input', () => { validateFaculty(); updateSubmitState(); });
+  department?.addEventListener('change', () => { validateFaculty(); updateSubmitState(); });
+
+  form.addEventListener('submit', e => {
+    if (!validateActiveRole()) {
+      e.preventDefault();
+    }
+  });
+
+  toggle(roleSel.value);
+  updateSubmitState();
+})();
+</script>
+{% endblock %}
