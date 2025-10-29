@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,11 +23,9 @@
       <h1 class="site-title">Exam Registration Portal</h1>
     </div>
 
-
     <p style="color:white;position:absolute;top:10px;left:10px;font-size:12px;">
-    ROLE DEBUG: {{ current_user.role.name if current_user.is_authenticated else 'NONE' }}
+      ROLE DEBUG: {{ current_user.role.name if current_user.is_authenticated else 'NONE' }}
     </p>
-
 
     <nav>
       <ul>
@@ -61,5 +58,32 @@
   <footer class="footer">
     <p>&copy; 2025 Exam Registration System</p>
   </footer>
+
+  <!-- 🔒 Inactivity Logout Timer (30 seconds for TESTING) -->
+  {% if current_user.is_authenticated %}
+  <script>
+    let inactivityTime = function () {
+        let time;
+        const maxInactivity = 30 * 1000; // 30 seconds TEST
+
+        function resetTimer() {
+            clearTimeout(time);
+            time = setTimeout(logoutUser, maxInactivity);
+        }
+
+        function logoutUser() {
+            window.location.href = "{{ url_for('auth.logout') }}";
+        }
+
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeydown = resetTimer;
+        document.onclick = resetTimer;
+        document.onscroll = resetTimer;
+    };
+
+    inactivityTime();
+  </script>
+  {% endif %}
 </body>
 </html>
