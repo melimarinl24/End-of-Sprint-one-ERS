@@ -1,0 +1,41 @@
+{# ============================================================
+  student_prefill_form.html
+  PARTIAL / SNIPPET
+
+  This template is used to PRE-FILL STUDENT INFORMATION
+  during the exam registration process.
+
+  It is NOT a full form by itself — it is meant to be INCLUDED
+  inside the final student exam registration template using:
+
+      {% include 'partials/student_prefill_form.html' %}
+
+  When used inside a <form> element, these inputs will be:
+  - Read-only (students cannot change their name/email/NSHE)
+  - Automatically populated from current_user (Flask-Login)
+  - Visible to faculty for auditing if needed
+
+  Author: Melissa
+  ============================================================ #}
+
+<div class="student-prefill-card">
+    <h3>Student Information</h3>
+
+    <div class="form-group">
+        <label for="student_name">Full Name</label>
+        <input type="text" id="student_name" name="student_name"
+               value="{{ current_user.name }}" readonly>
+    </div>
+
+    <div class="form-group">
+        <label for="student_email">CSN Email</label>
+        <input type="email" id="student_email" name="student_email"
+               value="{{ current_user.email }}" readonly>
+    </div>
+
+    <div class="form-group">
+        <label for="student_nshe">NSHE ID</label>
+        <input type="text" id="student_nshe" name="student_nshe"
+               value="{{ current_user.nshe_id }}" readonly>
+    </div>
+</div>

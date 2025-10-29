@@ -18,3 +18,20 @@ def student_exams():
 @login_required
 def student_appointments():
     return render_template("appointments.html")
+
+# ==========================================================
+# TEMPORARY DEMO / PREVIEW ROUTE
+# This route is ONLY for letting Melissa test the prefilled
+# student info panel BEFORE the registration form is finished.
+#
+# When the teammate creates the real registration page, they
+# will simply include:
+#
+#     {% include 'partials/student_prefill_form.html' %}
+#
+# inside the actual registration form.
+# ==========================================================
+@student_ui.route("/student/prefill-test", methods=["GET"])
+@login_required
+def student_prefill_test():
+    return render_template("partials/student_prefill_form.html")

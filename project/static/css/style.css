@@ -339,3 +339,121 @@ nav ul{list-style:none; margin:0; padding:0; display:flex; gap:14px}
     /* glow */
     box-shadow: 0 6px 18px rgba(109,49,255,0.22) !important;
 }
+
+/* ==========================
+   Session Timeout Modal Styles
+   ========================== */
+
+#session-timeout-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 999;
+}
+
+#session-timeout-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  width: min(92vw, 360px);
+  font-family: 'Space Grotesk', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+#session-timeout-modal .modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  text-align: center;
+}
+
+#session-timeout-modal h2 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+}
+
+#session-timeout-modal p {
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+#timeout-countdown {
+  font-weight: 700;
+}
+
+#stay-logged-in {
+  margin-top: 14px;
+  padding: 10px 16px;
+  background: #5A5DF0;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#stay-logged-in:hover {
+  opacity: 0.9;
+}
+
+/* ==========================
+   Session Timeout Modal Animation & Blur
+   ========================== */
+
+#session-timeout-overlay {
+  backdrop-filter: blur(3px); /* background blur for premium UI */
+}
+
+/* fade + scale animation */
+@keyframes modalFadeScale {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+#session-timeout-modal .modal-content {
+  animation: modalFadeScale 0.25s ease-out;
+}
+
+/* ==========================================================
+   Student Prefill Panel Styling
+   ========================================================== */
+
+.student-prefill-card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border: 1px solid #e2e2e2;
+  max-width: 450px;
+}
+
+.student-prefill-card h3 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+.student-prefill-card .form-group {
+  margin-bottom: 12px;
+}
+
+.student-prefill-card label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+.student-prefill-card input[readonly] {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  cursor: not-allowed;
+}

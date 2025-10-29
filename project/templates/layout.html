@@ -23,10 +23,6 @@
       <h1 class="site-title">Exam Registration Portal</h1>
     </div>
 
-    <p style="color:white;position:absolute;top:10px;left:10px;font-size:12px;">
-      ROLE DEBUG: {{ current_user.role.name if current_user.is_authenticated else 'NONE' }}
-    </p>
-
     <nav>
       <ul>
         <li><a class="nav-btn nav-btn-outline" href="{{ url_for('main.home') }}">Home</a></li>
@@ -55,35 +51,130 @@
     {% block content %}{% endblock %}
   </main>
 
+  {% if current_user.is_authenticated %}
+  <!-- Session Timeout Warning Modal (visible only for authenticated users) -->
+  <div id="session-timeout-overlay" style="display:none;"></div>
+  <div id="session-timeout-modal" role="dialog" aria-modal="true" aria-labelledby="timeout-title" aria-describedby="timeout-desc" style="display:none;">
+    <div class="modal-content">
+      <h2 id="timeout-title">Session Timeout Warning</h2>
+      <p id="timeout-desc">You will be logged out soon due to inactivity.</p>
+      <p><strong>Click “Stay Logged In” to continue your session.</strong></p>
+      <p>Time remaining: <span id="timeout-countdown">10</span> seconds</p>
+      <button id="stay-logged-in" type="button" aria-label="Stay Logged In">Stay Logged In</button>
+    </div>
+  </div>
+  {% endif %}
+
   <footer class="footer">
     <p>&copy; 2025 Exam Registration System</p>
   </footer>
 
-  <!-- 🔒 Inactivity Logout Timer (30 seconds for TESTING) -->
   {% if current_user.is_authenticated %}
+
+  <!-- Inactivity Timer with Warning Modal (TEST: 20s warn -> 30s logout) -->
   <script>
-    let inactivityTime = function () {
-        let time;
-        const maxInactivity = 30 * 1000; // 30 seconds TEST
+    (function () {
 
-        function resetTimer() {
-            clearTimeout(time);
-            time = setTimeout(logoutUser, maxInactivity);
-        }
+      // --- TEST SETTINGS ---
+      // const WARN_AFTER_MS   = 20 * 1000; // show modal at 20s of inactivity (test)
+      // const LOGOUT_AFTER_MS = 30 * 1000; // logout at 30s (test)
+      // const GRACE_MS        = LOGOUT_AFTER_MS - WARN_AFTER_MS; // 10s to click the button
 
-        function logoutUser() {
-            window.location.href = "{{ url_for('auth.logout') }}";
-        }
 
-        window.onload = resetTimer;
-        document.onmousemove = resetTimer;
-        document.onkeydown = resetTimer;
-        document.onclick = resetTimer;
-        document.onscroll = resetTimer;
-    };
+      // --- DEMO SETTINGS (50s warn -> 60s logout) ---
+      const WARN_AFTER_MS   = 50 * 1000; // warn at 50 seconds
+      const LOGOUT_AFTER_MS = 60 * 1000; // logout at 1 minute
+      const GRACE_MS        = LOGOUT_AFTER_MS - WARN_AFTER_MS; // 10 second grace
 
-    inactivityTime();
+
+      // --- FINAL SETTINGS (28min warn -> 30min logout) ---
+      // const WARN_AFTER_MS   = 28 * 60 * 1000; // 28 minutes
+      // const LOGOUT_AFTER_MS = 30 * 60 * 1000; // 30 minutes
+      // const GRACE_MS        = LOGOUT_AFTER_MS - WARN_AFTER_MS; // 2-minute grace
+
+      let warnTimer = null;
+      let logoutTimer = null;
+      let countdownTimer = null;
+      let modalVisible = false;
+      let logoutDeadline = null; // timestamp when auto-logout occurs
+
+      const overlay = document.getElementById('session-timeout-overlay');
+      const modal   = document.getElementById('session-timeout-modal');
+      const stayBtn = document.getElementById('stay-logged-in');
+      const countdownEl = document.getElementById('timeout-countdown');
+
+      function show(el) { el.style.display = 'block'; }
+      function hide(el) { el.style.display = 'none'; }
+
+      function startIdleTimers() {
+        clearTimers();
+        modalVisible = false;
+        warnTimer = setTimeout(onWarn, WARN_AFTER_MS);
+      }
+
+      function clearTimers() {
+        if (warnTimer) clearTimeout(warnTimer);
+        if (logoutTimer) clearTimeout(logoutTimer);
+        if (countdownTimer) clearInterval(countdownTimer);
+        warnTimer = logoutTimer = countdownTimer = null;
+      }
+
+      function onWarn() {
+        modalVisible = true;
+        logoutDeadline = Date.now() + GRACE_MS;
+        updateCountdown(); // set initial seconds immediately
+        show(overlay);
+        show(modal);
+
+        // START grace-period countdown + schedule logout
+        countdownTimer = setInterval(updateCountdown, 250);
+        logoutTimer = setTimeout(logoutUser, GRACE_MS);
+      }
+
+      function updateCountdown() {
+        const msLeft = Math.max(0, logoutDeadline - Date.now());
+        const seconds = Math.ceil(msLeft / 1000);
+        if (countdownEl) countdownEl.textContent = String(seconds);
+      }
+
+      function stayLoggedIn() {
+        // Hide modal, stop grace timers, restart idle tracking
+        hide(modal);
+        hide(overlay);
+        modalVisible = false;
+        clearTimers();
+
+        // (Optional) ping server to refresh session; comment out if not needed
+        // fetch('{{ url_for("main.home") }}', { method: 'HEAD' }).catch(() => {});
+
+        startIdleTimers();
+      }
+
+      function logoutUser() {
+        window.location.href = "{{ url_for('auth.logout') }}";
+      }
+
+      // Button-only behavior: user must click the button to continue.
+      if (stayBtn) {
+        stayBtn.addEventListener('click', stayLoggedIn);
+      }
+
+      // During normal activity (modal not visible), reset idle timers on interactions.
+      // When modal IS visible, interactions do NOT reset (button-only UX).
+      function maybeReset() {
+        if (!modalVisible) startIdleTimers();
+      }
+      window.addEventListener('load', maybeReset);
+      document.addEventListener('mousemove', maybeReset);
+      document.addEventListener('keydown', maybeReset);
+      document.addEventListener('click', maybeReset);
+      document.addEventListener('scroll', maybeReset, { passive: true });
+
+      // Kick things off
+      startIdleTimers();
+    })();
   </script>
   {% endif %}
 </body>
 </html>
+
